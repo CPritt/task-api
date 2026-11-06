@@ -17,8 +17,22 @@ paths:
   /tasks:
     get:
       summary: List all tasks
+      description: Returns all tasks, optionally filtered by completion status.
       tags:
         - Tasks
+      parameters:
+        - in: query
+          name: completed
+          required: false
+          description: >-
+            Filter tasks by completion status. Use `true` for completed tasks
+            only, `false` for incomplete tasks only. Omit to return all tasks.
+          schema:
+            type: string
+            enum:
+              - 'true'
+              - 'false'
+          example: 'true'
       responses:
         '200':
           description: OK
@@ -28,6 +42,22 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad request due to an invalid `completed` query parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Validation failed
+                  details:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - completed must be true or false
     post:
       summary: Create a new task
       tags:
